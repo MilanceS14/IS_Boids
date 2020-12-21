@@ -41,26 +41,37 @@ namespace Boids
                              + (secondBird.PositionY - PositionY) * (secondBird.PositionY - PositionY));
         }
 
-        public List<Bird> GetNeighbors()
+        public List<Bird> GetNeighbors(double toleranceAngle = 20)
         {
             var allBirds = Form1.GetAllBirds();
             var neighbors = new List<Bird>();
+            double toleranceAngleRadian = Math.PI / 360 * toleranceAngle; // calculation of half an angle in radian
 
+            double inverseAngle = Math.Atan2(-Heading.X, -Heading.Y); // getting inverse vector angle to determine blind spot vector
             foreach (var bird in allBirds)
             {
-                if (CalculateDistance(bird) <= NeighbourRadius)
-                    neighbors.Add(bird);
+                if ((PositionX == bird.PositionX && PositionY == bird.PositionY) || CalculateDistance(bird) > NeighbourRadius)
+                    continue;
+
+                double angle = Math.Atan2(PositionX - bird.PositionX, PositionY - bird.PositionY); // at what angle is bird seen
+                if (inverseAngle - toleranceAngleRadian > angle && inverseAngle + toleranceAngleRadian < angle)
+                {
+                    // Atan2 returns a number from -Pi to Pi, here we are calculating if the angle is in blind spot
+                    continue;
+                }
+
+                neighbors.Add(bird);
             }
             return neighbors;
         }
 
         public Vector calculateSeparationForce(List<Bird> neigbours)
         {
-            int x=0, y=0;
-            
+            int x = 0, y = 0;
+
             x = (neigbours.Sum(bird => bird.PositionX) - neigbours.Count * PositionX) / neigbours.Count;
             y = (neigbours.Sum(bird => bird.PositionY) - neigbours.Count * PositionY) / neigbours.Count;
-            
+
             var separation = new Vector(-x, -y);
             if (separation.X != 0 || separation.Y != 0)
                 separation.Normalize();
@@ -85,7 +96,7 @@ namespace Boids
             int x, y;
             x = neigbours.Sum(bird => bird.PositionX) / neigbours.Count;
             y = neigbours.Sum(bird => bird.PositionY) / neigbours.Count;
-            
+
             var cohesion = new Vector(x - PositionX, y - PositionY);
             if (cohesion.X != 0 || cohesion.Y != 0)
                 cohesion.Normalize();
@@ -157,33 +168,33 @@ namespace Boids
         public virtual void CalculateNewPosition(int maxWidth, int maxHeight)
         {
             var neighbors = GetNeighbors();
-            if (neighbors.Count == 0) return;
-
-
-            var avoidance = calculateAvoidensVector();
-            var obstacleAvoidance = calculateObstacleAvoidanceVector(neighbors);
-
-            if (obstacleAvoidance.X != 0 || obstacleAvoidance.Y != 0)
+            if (neighbors.Count != 0)
             {
-                Heading += obstacleAvoidance;
-            }
-            else
-            {
-                if (avoidance.X != 0 || avoidance.Y != 0)
+                var avoidance = calculateAvoidensVector();
+                var obstacleAvoidance = calculateObstacleAvoidanceVector(neighbors);
+
+                if (obstacleAvoidance.X != 0 || obstacleAvoidance.Y != 0)
                 {
-                    Heading += avoidance;
+                    Heading += obstacleAvoidance;
                 }
                 else
                 {
-                    var sep = SeparationWeight * calculateSeparationForce(neighbors);
-                    var align = AlignmentWeight * calculateAlignmentForce(neighbors);
-                    var coh = CohesionWeight * calculateCohesionForce(neighbors);
-                    Heading = Heading + sep + align + coh;
+                    if (avoidance.X != 0 || avoidance.Y != 0)
+                    {
+                        Heading += avoidance;
+                    }
+                    else
+                    {
+                        var sep = SeparationWeight * calculateSeparationForce(neighbors);
+                        var align = AlignmentWeight * calculateAlignmentForce(neighbors);
+                        var coh = CohesionWeight * calculateCohesionForce(neighbors);
+                        Heading = Heading + sep + align + coh;
+                    }
                 }
-            }
 
-            if (Heading.X != 0 || Heading.Y != 0)
-                Heading.Normalize();
+                if (Heading.X != 0 || Heading.Y != 0)
+                    Heading.Normalize();
+            }
 
             PositionX = PositionX + Convert.ToInt32(Heading.X * Speed);
             PositionY = PositionY + Convert.ToInt32(Heading.Y * Speed);

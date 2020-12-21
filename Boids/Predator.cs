@@ -9,7 +9,7 @@ namespace Boids
     public class Predator : Bird
     {
         public static double predatorSpeed = 1;
-        public Predator(Random rnd, Form forma): base(rnd, forma)
+        public Predator(Random rnd, Form forma) : base(rnd, forma)
         {
 
         }
@@ -21,12 +21,14 @@ namespace Boids
             Bird closestBird = null;
             foreach (var bird in allBirds)
             {
-                if (closestDistance >= CalculateDistance(bird))
+                double distance = CalculateDistance(bird);
+                if (closestDistance >= distance && distance < NeighbourRadius * 2)
                 {
                     closestBird = bird;
-                    closestDistance = CalculateDistance(bird);
+                    closestDistance = distance;
                 }
             }
+
             if (closestBird != null)
             {
                 List<Bird> neighbors = GetNeighbors();

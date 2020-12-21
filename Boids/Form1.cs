@@ -64,53 +64,48 @@ namespace Boids
 
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            Bird.SeparationWeight = this.trackBarSeparation.Value;
-            this.labelSeparation.Text = "Separation: " + trackBarSeparation.Value.ToString();
-        }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnAddObstacle_Click(object sender, EventArgs e)
         {
             AllObstacles.Add(new Obstacle(rnd, this));
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnRemoveObstacles_Click(object sender, EventArgs e)
         {
             AllObstacles.Clear();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btnAddPredators_Click(object sender, EventArgs e)
         {
             AllPredators.Add(new Predator(rnd, this));
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void btnRemovePredator_Click(object sender, EventArgs e)
         {
             AllPredators.Clear();
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
+        private void trackBar1_Scroll(object sender, EventArgs e)
         {
-
+            Bird.SeparationWeight = this.trackBarSeparation.Value * 0.5;
+            this.labelSeparation.Text = "Separation: " + trackBarSeparation.Value * 0.5;
         }
-
         private void trackBarAligment_Scroll(object sender, EventArgs e)
         {
-            Bird.AlignmentWeight = this.trackBarAligment.Value;
-            this.labelAligment.Text = "Aligment: " + trackBarAligment.Value.ToString();
+            Bird.AlignmentWeight = this.trackBarAligment.Value * 0.5;
+            this.labelAligment.Text = "Aligment: " + trackBarAligment.Value * 0.5;
         }
 
         private void trackBarCohesion_Scroll(object sender, EventArgs e)
         {
-            Bird.CohesionWeight = this.trackBarCohesion.Value;
-            this.labelCohesion.Text = "Cohesion: " + trackBarCohesion.Value.ToString();
+            Bird.CohesionWeight = this.trackBarCohesion.Value*0.5;
+            this.labelCohesion.Text = "Cohesion: " + trackBarCohesion.Value * 0.5;
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             toDraw = !toDraw;
-            if (!this.toRun | (this.trackBar1.Value == 1 & toDraw))
+            if (!this.toRun | (this.trackBarSpeed.Value == 1 & toDraw))
                 return;
 
             Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
@@ -146,10 +141,9 @@ namespace Boids
 
                 foreach (var item in AllObstacles)
                 {
-                    formGraphics.DrawEllipse(Pens.Blue, item.x - item.r / 2, item.y - item.r / 2, item.r, item.r);
+                    formGraphics.DrawEllipse(Pens.Blue, item.x - item.r / 2, item.y - item.r / 2, item.r - BirdWidth, item.r - BirdWidth);
                 }
             }
-            pictureBox1.Invalidate();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -163,18 +157,19 @@ namespace Boids
                 btnStop.Text = "Stop";
             }
             this.toRun = !this.toRun;
+            this.pictureBox1.Invalidate();
             this.Invalidate();
 
         }
 
         private void trackBar1_Scroll_1(object sender, EventArgs e)
         {
-            double newSpeed = trackBar1.Value;
+            double newSpeed = trackBarSpeed.Value;
             if (newSpeed == 1)
                 newSpeed = 2;
             Bird.Speed = newSpeed * 0.5;
             Predator.predatorSpeed = newSpeed * 0.5;
-            lblSpeed.Text = "Speed: " + trackBar1.Value * 0.5;
+            lblSpeed.Text = "Speed: " + trackBarSpeed.Value * 0.5;
         }
     }
 }
