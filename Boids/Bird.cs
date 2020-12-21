@@ -49,20 +49,17 @@ namespace Boids
             var allBirds = Form1.GetAllBirds();
             var neighbors = new List<Bird>();
             double toleranceAngleRadian = Math.PI / 360 * toleranceAngle; // calculation of half an angle in radian
-
             double inverseAngle = Math.Atan2(-Heading.X, -Heading.Y); // getting inverse vector angle to determine blind spot vector
             foreach (var bird in allBirds)
             {
                 if ((PositionX == bird.PositionX && PositionY == bird.PositionY) || CalculateDistance(bird) > NeighbourRadius)
                     continue;
-
                 double angle = Math.Atan2(PositionX - bird.PositionX, PositionY - bird.PositionY); // at what angle is bird seen
                 if (inverseAngle - toleranceAngleRadian > angle && inverseAngle + toleranceAngleRadian < angle)
                 {
                     // Atan2 returns a number from -Pi to Pi, here we are calculating if the angle is in blind spot
                     continue;
                 }
-
                 neighbors.Add(bird);
             }
             return neighbors;
