@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Forms;
 using System.Linq;
+using System.Numerics;
 
 namespace Boids
 {
@@ -14,22 +14,25 @@ namespace Boids
         public static double AlignmentWeight = 1;
         public static double CohesionWeight = 1;
         public static double Speed = 1;
-        public Vector Heading;
+        public Vector2 Heading;
+        protected Random rnd;
 
 
         public Bird(Random rnd, Form forma)
         {
             PositionX = rnd.Next(forma.Width);
             PositionY = rnd.Next(forma.Height);
-            Heading = new Vector((rnd.Next(4) + 1) * Math.Pow(-1, rnd.Next(3)),
-                (rnd.Next(4) + 1) * Math.Pow(-1, rnd.Next(3)));
+            Heading = new Vector2(rnd.Next(100) - 50, rnd.Next(100) - 50);
+            Heading = Vector2.Normalize(Heading);
+            this.rnd = rnd;
         }
 
-        public Bird(int x, int y, Vector heading)
+        public Bird(int x, int y, Vector2 heading, Random rnd)
         {
             PositionX = x;
             PositionY = y;
             Heading = heading;
+            this.rnd = rnd;
         }
 
         public int PositionX { get; set; }
@@ -65,45 +68,46 @@ namespace Boids
             return neighbors;
         }
 
-        public Vector calculateSeparationForce(List<Bird> neigbours)
+        public Vector2 CalculateSeparationForce(List<Bird> neigbours)
         {
-            int x = 0, y = 0;
-
-            x = (neigbours.Sum(bird => bird.PositionX) - neigbours.Count * PositionX) / neigbours.Count;
-            y = (neigbours.Sum(bird => bird.PositionY) - neigbours.Count * PositionY) / neigbours.Count;
-
-            var separation = new Vector(-x, -y);
+            Vector2 separation = new Vector2(0, 0);
+            foreach (Bird bird in neigbours)
+            {
+                Vector2 newVector = new Vector2(bird.PositionX - PositionX, bird.PositionY - PositionY);
+                Vector2.Multiply(newVector, (float)(1 / CalculateDistance(bird)));
+                separation -= newVector;
+            }
             if (separation.X != 0 || separation.Y != 0)
-                separation.Normalize();
+                separation = Vector2.Normalize(separation);
             return separation;
         }
 
-        public Vector calculateAlignmentForce(List<Bird> neigbours)
+        public Vector2 CalculateAlignmentForce(List<Bird> neigbours)
         {
-            var aligment = new Vector();
+            var aligment = new Vector2();
             foreach (var bird in neigbours)
             {
                 aligment += bird.Heading;
             }
             aligment /= neigbours.Count;
             if (aligment.X != 0 || aligment.Y != 0)
-                aligment.Normalize();
+                aligment = Vector2.Normalize(aligment);
             return aligment;
         }
 
-        public Vector calculateCohesionForce(List<Bird> neigbours)
+        public Vector2 CalculateCohesionForce(List<Bird> neigbours)
         {
             int x, y;
-            x = neigbours.Sum(bird => bird.PositionX) / neigbours.Count;
-            y = neigbours.Sum(bird => bird.PositionY) / neigbours.Count;
+            x = neigbours.Sum(bird => bird.PositionX) / neigbours.Count - PositionX;
+            y = neigbours.Sum(bird => bird.PositionY) / neigbours.Count - PositionY;
 
-            var cohesion = new Vector(x - PositionX, y - PositionY);
+            var cohesion = new Vector2(x, y);
             if (cohesion.X != 0 || cohesion.Y != 0)
-                cohesion.Normalize();
+                cohesion = Vector2.Normalize(cohesion);
             return cohesion;
         }
 
-        public Vector calculateAvoidensVector()
+        public Vector2 CalculateAvoidensVector()
         {
             int i = 0, x = 0, y = 0;
             var allPredators = Form1.AllPredators;
@@ -118,51 +122,10 @@ namespace Boids
                 }
             }
             if (i == 0)
-                return new Vector(0, 0);
+                return new Vector2(0, 0);
             x /= i;
             y /= i;
-            return new Vector(-x, -y);
-        }
-
-        public Vector calculateObstacleAvoidanceVector(List<Bird> neighbors)
-        {
-            Obstacle nearestObstacle = null;
-            var allObstacles = Form1.AllObstacles;
-            double closestDistance = 999999;
-            foreach (var obstacle in allObstacles)
-            {
-                var distance = Math.Sqrt((obstacle.x - PositionX) * (obstacle.x - PositionX) +
-                                         (obstacle.y - PositionY) * (obstacle.y - PositionY));
-                if (distance <= 3 * NeighbourRadius && distance <= closestDistance)
-                {
-                    closestDistance = distance;
-                    nearestObstacle = obstacle;
-                }
-            }
-            if (nearestObstacle == null)
-                return new Vector(0, 0);
-
-            var deadBird = new Bird(PositionX, PositionY, Heading);
-            {
-                deadBird.PositionX = deadBird.PositionX + Convert.ToInt32(deadBird.Heading.X * 3);
-                deadBird.PositionY = deadBird.PositionY + Convert.ToInt32(deadBird.Heading.Y * 3);
-            }
-            var newDistance =
-                Math.Sqrt((nearestObstacle.x - deadBird.PositionX) * (nearestObstacle.x - deadBird.PositionX) +
-                          (nearestObstacle.y - deadBird.PositionY) * (nearestObstacle.y - deadBird.PositionY));
-            if (newDistance > closestDistance || newDistance > nearestObstacle.r + Form1.BirdWidth)
-                return new Vector(0, 0);
-
-            var avoidanceObstacleVector =
-                new Vector(nearestObstacle.x - PositionX, nearestObstacle.y - PositionY);
-
-            var perpundicularVector = new Vector(avoidanceObstacleVector.Y, -avoidanceObstacleVector.X);
-            if (perpundicularVector.X != 0 || perpundicularVector.Y != 0)
-                perpundicularVector.Normalize();
-            perpundicularVector = perpundicularVector * (nearestObstacle.r + Form1.BirdWidth / 2);
-
-            avoidanceObstacleVector = avoidanceObstacleVector + perpundicularVector;
-            return avoidanceObstacleVector;
+            return new Vector2(-x, -y);
         }
 
         public virtual void CalculateNewPosition(int maxWidth, int maxHeight)
@@ -170,34 +133,27 @@ namespace Boids
             var neighbors = GetNeighbors();
             if (neighbors.Count != 0)
             {
-                var avoidance = calculateAvoidensVector();
-                var obstacleAvoidance = calculateObstacleAvoidanceVector(neighbors);
+                var avoidance = CalculateAvoidensVector();
 
-                if (obstacleAvoidance.X != 0 || obstacleAvoidance.Y != 0)
+                if (avoidance.X != 0 || avoidance.Y != 0)
                 {
-                    Heading += obstacleAvoidance;
+                    Heading += avoidance;
                 }
                 else
                 {
-                    if (avoidance.X != 0 || avoidance.Y != 0)
-                    {
-                        Heading += avoidance;
-                    }
-                    else
-                    {
-                        var sep = SeparationWeight * calculateSeparationForce(neighbors);
-                        var align = AlignmentWeight * calculateAlignmentForce(neighbors);
-                        var coh = CohesionWeight * calculateCohesionForce(neighbors);
-                        Heading = Heading + sep + align + coh;
-                    }
+                    var sep = CalculateSeparationForce(neighbors) * (float)SeparationWeight;
+                    var align = CalculateAlignmentForce(neighbors) * (float)AlignmentWeight;
+                    var coh = CalculateCohesionForce(neighbors) * (float)CohesionWeight;
+                    Heading = Heading + sep + align + coh;
                 }
 
-                if (Heading.X != 0 || Heading.Y != 0)
-                    Heading.Normalize();
+                if ((Heading.X == 0 && Heading.Y == 0) || double.IsNaN(Heading.X) || Double.IsNaN(Heading.Y))
+                    Heading = new Vector2(rnd.Next(100) - 50, rnd.Next(100) - 50);
+                Heading = Vector2.Normalize(Heading);
             }
 
-            PositionX = PositionX + Convert.ToInt32(Heading.X * Speed);
-            PositionY = PositionY + Convert.ToInt32(Heading.Y * Speed);
+            PositionX += (int)(Heading.X * Speed);
+            PositionY += (int)(Heading.Y * Speed);
             PositionX = PositionX <= 0 ? maxWidth : (PositionX >= maxWidth ? 0 : PositionX);
             PositionY = PositionY <= 0 ? maxHeight : (PositionY >= maxHeight ? 0 : PositionY);
         }

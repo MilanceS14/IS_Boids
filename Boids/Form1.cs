@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,7 +10,6 @@ namespace Boids
     {
         public static List<Bird> AllBirds;
         public static List<Predator> AllPredators;
-        public static List<Obstacle> AllObstacles;
         public static int BirdWidth = 10;
         Random rnd = new Random();
         private bool toRun = false;
@@ -25,7 +20,6 @@ namespace Boids
             InitializeComponent();
             AllBirds = new List<Bird>();
             AllPredators = new List<Predator>();
-            AllObstacles = new List<Obstacle>();
             for (int i = 0; i < 100; i++)
             {
                 AllBirds.Add(new Bird(rnd, this));
@@ -34,12 +28,8 @@ namespace Boids
             {
                 AllPredators.Add(new Predator(rnd, this));
             }
-            for (int i = 0; i < 5; i++)
-            {
-                AllObstacles.Add(new Obstacle(rnd, this));
-            }
             this.DoubleBuffered = true;
-            pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            pictureBox1.Paint += new PaintEventHandler(this.pictureBox1_Paint);
             this.Controls.Add(pictureBox1);
         }
 
@@ -62,17 +52,6 @@ namespace Boids
         private void Form1_Load(object sender, EventArgs e)
         {
 
-        }
-
-
-        private void btnAddObstacle_Click(object sender, EventArgs e)
-        {
-            AllObstacles.Add(new Obstacle(rnd, this));
-        }
-
-        private void btnRemoveObstacles_Click(object sender, EventArgs e)
-        {
-            AllObstacles.Clear();
         }
 
         private void btnAddPredators_Click(object sender, EventArgs e)
@@ -124,8 +103,8 @@ namespace Boids
                 {
                     formGraphics.DrawEllipse(Pens.Black, item.PositionX - BirdWidth / 2, item.PositionY - BirdWidth / 2, BirdWidth, BirdWidth);
                     formGraphics.DrawLine(Pens.Black, item.PositionX, item.PositionY,
-                        Convert.ToInt32(item.Heading.X / item.Heading.Length * 10 + item.PositionX),
-                        Convert.ToInt32(item.Heading.Y / item.Heading.Length * 10 + item.PositionY));
+                        (int)(item.Heading.X / item.Heading.Length() * 10 + item.PositionX),
+                        (int)(item.Heading.Y / item.Heading.Length() * 10 + item.PositionY));
                 }
                 Parallel.ForEach(AllPredators, predator =>
                 {
@@ -135,13 +114,8 @@ namespace Boids
                 {
                     formGraphics.DrawEllipse(Pens.Red, item.PositionX - BirdWidth / 2, item.PositionY - BirdWidth / 2, BirdWidth, BirdWidth);
                     formGraphics.DrawLine(Pens.Red, item.PositionX, item.PositionY,
-                        Convert.ToInt32(item.Heading.X / item.Heading.Length * 10 + item.PositionX),
-                        Convert.ToInt32(item.Heading.Y / item.Heading.Length * 10 + item.PositionY));
-                }
-
-                foreach (var item in AllObstacles)
-                {
-                    formGraphics.DrawEllipse(Pens.Blue, item.x - item.r / 2, item.y - item.r / 2, item.r - BirdWidth, item.r - BirdWidth);
+                        (int)(item.Heading.X / item.Heading.Length() * 10 + item.PositionX),
+                        (int)(item.Heading.Y / item.Heading.Length() * 10 + item.PositionY));
                 }
             }
         }
@@ -159,7 +133,6 @@ namespace Boids
             this.toRun = !this.toRun;
             this.pictureBox1.Invalidate();
             this.Invalidate();
-
         }
 
         private void trackBar1_Scroll_1(object sender, EventArgs e)
@@ -169,7 +142,7 @@ namespace Boids
                 newSpeed = 2;
             Bird.Speed = newSpeed * 0.5;
             Predator.predatorSpeed = newSpeed * 0.5;
-            lblSpeed.Text = "Speed: " + trackBarSpeed.Value * 0.5;
+            lblSpeed.Text = "Speed: " + (trackBarSpeed.Value * 0.5-1);
         }
     }
 }

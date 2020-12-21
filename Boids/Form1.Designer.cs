@@ -34,9 +34,7 @@
             this.labelSeparation = new System.Windows.Forms.Label();
             this.labelAligment = new System.Windows.Forms.Label();
             this.labelCohesion = new System.Windows.Forms.Label();
-            this.btnAddObstacle = new System.Windows.Forms.Button();
             this.btnAddPredator = new System.Windows.Forms.Button();
-            this.btnRemoveObstacles = new System.Windows.Forms.Button();
             this.btnRemovePredator = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.trackBarSpeed = new System.Windows.Forms.TrackBar();
@@ -53,7 +51,7 @@
             // 
             // trackBarSeparation
             // 
-            this.trackBarSeparation.Location = new System.Drawing.Point(5, 39);
+            this.trackBarSeparation.Location = new System.Drawing.Point(5, 46);
             this.trackBarSeparation.Margin = new System.Windows.Forms.Padding(4);
             this.trackBarSeparation.Maximum = 6;
             this.trackBarSeparation.Minimum = 2;
@@ -77,7 +75,7 @@
             // 
             // trackBarCohesion
             // 
-            this.trackBarCohesion.Location = new System.Drawing.Point(5, 212);
+            this.trackBarCohesion.Location = new System.Drawing.Point(5, 205);
             this.trackBarCohesion.Margin = new System.Windows.Forms.Padding(4);
             this.trackBarCohesion.Maximum = 6;
             this.trackBarCohesion.Minimum = 2;
@@ -90,7 +88,7 @@
             // labelSeparation
             // 
             this.labelSeparation.AutoSize = true;
-            this.labelSeparation.Location = new System.Drawing.Point(28, 16);
+            this.labelSeparation.Location = new System.Drawing.Point(28, 23);
             this.labelSeparation.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelSeparation.Name = "labelSeparation";
             this.labelSeparation.Size = new System.Drawing.Size(93, 17);
@@ -110,27 +108,16 @@
             // labelCohesion
             // 
             this.labelCohesion.AutoSize = true;
-            this.labelCohesion.Location = new System.Drawing.Point(33, 188);
+            this.labelCohesion.Location = new System.Drawing.Point(33, 181);
             this.labelCohesion.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelCohesion.Name = "labelCohesion";
             this.labelCohesion.Size = new System.Drawing.Size(83, 17);
             this.labelCohesion.TabIndex = 1;
             this.labelCohesion.Text = "Cohesion: 1";
             // 
-            // btnAddObstacle
-            // 
-            this.btnAddObstacle.Location = new System.Drawing.Point(8, 409);
-            this.btnAddObstacle.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAddObstacle.Name = "btnAddObstacle";
-            this.btnAddObstacle.Size = new System.Drawing.Size(155, 28);
-            this.btnAddObstacle.TabIndex = 2;
-            this.btnAddObstacle.Text = "Add obstacle";
-            this.btnAddObstacle.UseVisualStyleBackColor = true;
-            this.btnAddObstacle.Click += new System.EventHandler(this.btnAddObstacle_Click);
-            // 
             // btnAddPredator
             // 
-            this.btnAddPredator.Location = new System.Drawing.Point(8, 481);
+            this.btnAddPredator.Location = new System.Drawing.Point(7, 381);
             this.btnAddPredator.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddPredator.Name = "btnAddPredator";
             this.btnAddPredator.Size = new System.Drawing.Size(155, 28);
@@ -139,20 +126,9 @@
             this.btnAddPredator.UseVisualStyleBackColor = true;
             this.btnAddPredator.Click += new System.EventHandler(this.btnAddPredators_Click);
             // 
-            // btnRemoveObstacles
-            // 
-            this.btnRemoveObstacles.Location = new System.Drawing.Point(8, 445);
-            this.btnRemoveObstacles.Margin = new System.Windows.Forms.Padding(4);
-            this.btnRemoveObstacles.Name = "btnRemoveObstacles";
-            this.btnRemoveObstacles.Size = new System.Drawing.Size(155, 28);
-            this.btnRemoveObstacles.TabIndex = 2;
-            this.btnRemoveObstacles.Text = "Remove obstacles";
-            this.btnRemoveObstacles.UseVisualStyleBackColor = true;
-            this.btnRemoveObstacles.Click += new System.EventHandler(this.btnRemoveObstacles_Click);
-            // 
             // btnRemovePredator
             // 
-            this.btnRemovePredator.Location = new System.Drawing.Point(8, 517);
+            this.btnRemovePredator.Location = new System.Drawing.Point(7, 417);
             this.btnRemovePredator.Margin = new System.Windows.Forms.Padding(4);
             this.btnRemovePredator.Name = "btnRemovePredator";
             this.btnRemovePredator.Size = new System.Drawing.Size(155, 28);
@@ -168,11 +144,9 @@
             this.groupBox1.Controls.Add(this.btnStop);
             this.groupBox1.Controls.Add(this.btnRemovePredator);
             this.groupBox1.Controls.Add(this.trackBarSeparation);
-            this.groupBox1.Controls.Add(this.btnRemoveObstacles);
             this.groupBox1.Controls.Add(this.trackBarAligment);
             this.groupBox1.Controls.Add(this.btnAddPredator);
             this.groupBox1.Controls.Add(this.trackBarCohesion);
-            this.groupBox1.Controls.Add(this.btnAddObstacle);
             this.groupBox1.Controls.Add(this.labelSeparation);
             this.groupBox1.Controls.Add(this.lblSpeed);
             this.groupBox1.Controls.Add(this.labelCohesion);
@@ -181,25 +155,25 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(165, 553);
+            this.groupBox1.Size = new System.Drawing.Size(165, 458);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commands";
             // 
             // trackBarSpeed
             // 
-            this.trackBarSpeed.Location = new System.Drawing.Point(5, 301);
-            this.trackBarSpeed.Maximum = 4;
-            this.trackBarSpeed.Minimum = 1;
+            this.trackBarSpeed.Location = new System.Drawing.Point(5, 289);
+            this.trackBarSpeed.Maximum = 6;
+            this.trackBarSpeed.Minimum = 4;
             this.trackBarSpeed.Name = "trackBarSpeed";
             this.trackBarSpeed.Size = new System.Drawing.Size(139, 56);
             this.trackBarSpeed.TabIndex = 4;
-            this.trackBarSpeed.Value = 2;
+            this.trackBarSpeed.Value = 5;
             this.trackBarSpeed.Scroll += new System.EventHandler(this.trackBar1_Scroll_1);
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(8, 379);
+            this.btnStop.Location = new System.Drawing.Point(7, 351);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(155, 23);
             this.btnStop.TabIndex = 3;
@@ -210,7 +184,7 @@
             // lblSpeed
             // 
             this.lblSpeed.AutoSize = true;
-            this.lblSpeed.Location = new System.Drawing.Point(33, 274);
+            this.lblSpeed.Location = new System.Drawing.Point(33, 262);
             this.lblSpeed.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(65, 17);
@@ -257,9 +231,7 @@
         private System.Windows.Forms.Label labelSeparation;
         private System.Windows.Forms.Label labelAligment;
         private System.Windows.Forms.Label labelCohesion;
-        private System.Windows.Forms.Button btnAddObstacle;
         private System.Windows.Forms.Button btnAddPredator;
-        private System.Windows.Forms.Button btnRemoveObstacles;
         private System.Windows.Forms.Button btnRemovePredator;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
